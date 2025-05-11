@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { CaptureScreenshot, GenerateSolution, Reset, SetLanguage } from '../wailsjs/go/main/App'
+import { EventsOn } from '../wailsjs/runtime'
 import './App.css'
 
 function App() {
@@ -10,45 +11,44 @@ function App() {
   const [complexity, setComplexity] = useState({ time: '', space: '' })
 
   useEffect(() => {
-    const handleKeyPress = async (e) => {
-      console.log(e.key)
+    // Listen for global keyboard shortcuts
+    const unsubscribe = EventsOn("global-shortcut", async (shortcut) => {
+      switch (shortcut) {
+        case "screenshot":
+          try {
+            await CaptureScreenshot()
+          } catch (error) {
+            console.error('Failed to capture screenshot:', error)
+          }
+          break;
+        
+        case "generate":
+          try {
+            const result = await GenerateSolution()
+            setSolution(result)
+            setIsOverlayVisible(true)
+          } catch (error) {
+            console.error('Failed to generate solution:', error)
+          }
+          break;
+        
+        case "reset":
+          try {
+            await Reset()
+            setSolution('')
+            setThoughts('')
+            setComplexity({ time: '', space: '' })
+            setIsOverlayVisible(false)
+          } catch (error) {
+            console.error('Failed to reset:', error)
+          }
+          break;
+      }
+    })
 
-      // Super + Print Screen
-      if (e.key === 'PrintScreen' && e.metaKey) {
-        try {
-          await CaptureScreenshot()
-        } catch (error) {
-          console.error('Failed to capture screenshot:', error)
-        }
-      }
-      
-      // Super + Enter
-      if (e.key === 'Enter' && e.metaKey) {
-        try {
-          const result = await GenerateSolution()
-          setSolution(result)
-          setIsOverlayVisible(true)
-        } catch (error) {
-          console.error('Failed to generate solution:', error)
-        }
-      }
-      
-      // Super + R
-      if (e.key === 'r' && e.metaKey) {
-        try {
-          await Reset()
-          setSolution('')
-          setThoughts('')
-          setComplexity({ time: '', space: '' })
-          setIsOverlayVisible(false)
-        } catch (error) {
-          console.error('Failed to reset:', error)
-        }
-      }
+    return () => {
+      unsubscribe()
     }
-
-    window.addEventListener('keydown', handleKeyPress)
-    return () => window.removeEventListener('keydown', handleKeyPress)
   }, [])
 
   const handleLanguageChange = async (newLang) => {

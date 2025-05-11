@@ -11,7 +11,9 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/kbinani/screenshot"
+	hook "github.com/robotn/gohook"
 	"github.com/sashabaranov/go-openai"
+	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 const tmpDir = "tmp"
@@ -47,7 +49,40 @@ func (a *App) startup(ctx context.Context) {
 		panic("OPENAI_API_KEY not set")
 	}
 
+	// Register global keyboard shortcuts
+	go a.registerKeyShortcuts()
+
 	a.openaiClient = openai.NewClient(apiKey)
+}
+
+func (a *App) registerKeyShortcuts() {
+	hook.Register(
+		hook.KeyDown,
+		[]string{"super", "printscreen"},
+		func(e hook.Event) {
+			runtime.EventsEmit(a.ctx, "global-shortcut", "screenshot")
+		},
+	)
+
+	// Super + Enter
+	hook.Register(
+		hook.KeyDown,
+		[]string{"super", "enter"},
+		func(e hook.Event) {
+			runtime.EventsEmit(a.ctx, "global-shortcut", "generate")
+		},
+	)
+
+	// Super + R
+	hook.Register(
+		hook.KeyDown,
+		[]string{"super", "r"},
+		func(e hook.Event) {
+			runtime.EventsEmit(a.ctx, "global-shortcut", "reset")
+		},
+	)
+
+	hook.Start()
 }
 
 // CaptureScreenshot captures the screen and saves it
