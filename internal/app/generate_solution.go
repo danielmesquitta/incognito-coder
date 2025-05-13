@@ -20,7 +20,7 @@ func (a *App) GenerateSolution() (string, error) {
 
 	// Create a message for the system
 	systemMessage := fmt.Sprintf(
-		"You are a helpful programming assistant. Analyze the provided screenshots and generate a solution in %s programming language.",
+		"You are a LeetCode expert. Analyze the provided screenshots and generate a solution in %s programming language.",
 		a.currentLanguage,
 	)
 
