@@ -1,7 +1,8 @@
 package main
 
 import (
-	"embed"
+	root "github.com/danielmesquitta/incognito-coder"
+	"github.com/danielmesquitta/incognito-coder/internal/app"
 
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -11,12 +12,8 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/options/windows"
 )
 
-//go:embed all:frontend/dist
-var assets embed.FS
-
 func main() {
-	// Create an instance of the app structure
-	app := NewApp()
+	app := app.New()
 
 	// Create application with options
 	err := wails.Run(&options.App{
@@ -24,13 +21,14 @@ func main() {
 		Width:  1024,
 		Height: 768,
 		AssetServer: &assetserver.Options{
-			Assets: assets,
+			Assets: root.Assets,
 		},
 		BackgroundColour: &options.RGBA{R: 0, G: 0, B: 0, A: 70},
-		OnStartup:        app.startup,
+		OnStartup:        app.Run,
 		Bind: []any{
 			app,
 		},
+		AlwaysOnTop: true,
 		Windows: &windows.Options{
 			WindowIsTranslucent: true,
 		},

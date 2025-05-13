@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { CaptureScreenshot, GenerateSolution, Reset, SetLanguage } from '../wailsjs/go/main/App'
+import { CaptureScreenshot, GenerateSolution, Reset, SetLanguage } from '../wailsjs/go/app/App'
 import { EventsOn } from '../wailsjs/runtime'
 import './App.css'
 
