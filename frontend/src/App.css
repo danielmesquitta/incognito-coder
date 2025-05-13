@@ -75,9 +75,10 @@
 .language-select {
   padding: 8px 12px;
   border-radius: 4px;
-  border: 1px solid #ccc;
-  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(204, 204, 204, 0.5);
+  background: transparent;
   font-size: 14px;
+  color: #333;
 }
 
 .solution-overlay {
@@ -87,7 +88,7 @@
   transform: translate(-50%, -50%);
   width: 80%;
   max-width: 800px;
-  background: rgba(255, 255, 255, 0.95);
+  background: transparent;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   z-index: 1000;
@@ -128,7 +129,7 @@
 }
 
 .code-block {
-  background: #f5f5f5;
+  background: transparent;
   padding: 16px;
   border-radius: 4px;
   font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
@@ -136,6 +137,7 @@
   line-height: 1.5;
   overflow-x: auto;
   margin: 0 0 20px 0;
+  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .thoughts, .complexity {

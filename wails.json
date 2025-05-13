@@ -9,5 +9,11 @@
   "author": {
     "name": "Daniel Mesquita",
     "email": "danielmesquitta123@gmail.com"
+  },
+  "window": {
+    "transparent": true,
+    "frameless": true,
+    "width": 800,
+    "height": 600
   }
 }

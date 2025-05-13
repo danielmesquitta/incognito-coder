@@ -49,7 +49,6 @@ func (a *App) startup(ctx context.Context) {
 		panic("OPENAI_API_KEY not set")
 	}
 
-	// Register global keyboard shortcuts
 	go a.registerKeyShortcuts()
 
 	a.openaiClient = openai.NewClient(apiKey)
@@ -58,31 +57,30 @@ func (a *App) startup(ctx context.Context) {
 func (a *App) registerKeyShortcuts() {
 	hook.Register(
 		hook.KeyDown,
-		[]string{"super", "printscreen"},
+		[]string{"p", "ctrl", "alt"},
 		func(e hook.Event) {
 			runtime.EventsEmit(a.ctx, "global-shortcut", "screenshot")
 		},
 	)
 
-	// Super + Enter
 	hook.Register(
 		hook.KeyDown,
-		[]string{"super", "enter"},
+		[]string{"enter", "ctrl", "alt"},
 		func(e hook.Event) {
 			runtime.EventsEmit(a.ctx, "global-shortcut", "generate")
 		},
 	)
 
-	// Super + R
 	hook.Register(
 		hook.KeyDown,
-		[]string{"super", "r"},
+		[]string{"r", "ctrl", "alt"},
 		func(e hook.Event) {
 			runtime.EventsEmit(a.ctx, "global-shortcut", "reset")
 		},
 	)
 
-	hook.Start()
+	s := hook.Start()
+	<-hook.Process(s)
 }
 
 // CaptureScreenshot captures the screen and saves it
