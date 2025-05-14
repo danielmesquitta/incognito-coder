@@ -6,45 +6,78 @@ import {
   SetLanguage,
 } from "../wailsjs/go/app/App";
 import { entity } from "../wailsjs/go/models";
-import { EventsOn } from "../wailsjs/runtime/runtime";
+import {
+  EventsOn,
+  WindowIsMinimised,
+  WindowMinimise,
+  WindowSetPosition,
+  WindowUnminimise,
+} from "../wailsjs/runtime/runtime";
 import "./App.css";
 
 function App() {
   const [solution, setSolution] = useState<entity.Solution | null>(null);
   const [language, setLanguage] = useState("golang");
-  const [isOverlayVisible, setIsOverlayVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Listen for global keyboard shortcuts
     const unsubscribe = EventsOn("global-shortcut", async (shortcut) => {
-      switch (shortcut) {
-        case "screenshot":
-          try {
-            await CaptureScreenshot();
-          } catch (error) {
-            console.error("Failed to capture screenshot:", error);
-          }
-          break;
+      setError(null);
 
-        case "generate":
-          try {
+      try {
+        switch (shortcut) {
+          case "screenshot":
+            await CaptureScreenshot();
+            break;
+
+          case "generate":
+            setIsLoading(true);
             const result = await GenerateSolution();
             setSolution(result);
-            setIsOverlayVisible(true);
-          } catch (error) {
-            console.error("Failed to generate solution:", error);
-          }
-          break;
+            break;
 
-        case "reset":
-          try {
+          case "reset":
             await Reset();
             setSolution(null);
-            setIsOverlayVisible(false);
-          } catch (error) {
-            console.error("Failed to reset:", error);
-          }
-          break;
+            break;
+
+          case "toggle-visibility":
+            const isMinimised = await WindowIsMinimised();
+            if (isMinimised) {
+              WindowUnminimise();
+            } else {
+              WindowMinimise();
+            }
+            break;
+
+          case "move-left":
+            WindowSetPosition(0, window.screen.height / 2 - 384);
+            break;
+
+          case "move-right":
+            WindowSetPosition(
+              window.screen.width - 1024,
+              window.screen.height / 2 - 384
+            );
+            break;
+
+          case "move-up":
+            WindowSetPosition(window.screen.width / 2 - 512, 0);
+            break;
+
+          case "move-down":
+            WindowSetPosition(
+              window.screen.width / 2 - 512,
+              window.screen.height - 768
+            );
+            break;
+        }
+      } catch (err) {
+        console.error("Error:", err);
+        setError(err instanceof Error ? err.message : "An error occurred");
+      } finally {
+        setIsLoading(false);
       }
     });
 
@@ -54,8 +87,15 @@ function App() {
   }, []);
 
   async function handleLanguageChange(newLang: string) {
-    setLanguage(newLang);
-    await SetLanguage(newLang);
+    try {
+      setLanguage(newLang);
+      await SetLanguage(newLang);
+    } catch (err) {
+      console.error("Failed to change language:", err);
+      setError(
+        err instanceof Error ? err.message : "Failed to change language"
+      );
+    }
   }
 
   return (
@@ -70,29 +110,67 @@ function App() {
           <option value="javascript">JavaScript</option>
           <option value="java">Java</option>
           <option value="python">Python</option>
+          <option value="typescript">TypeScript</option>
+          <option value="rust">Rust</option>
+          <option value="cpp">C++</option>
         </select>
       </div>
 
-      {isOverlayVisible && (
-        <div className="solution-overlay">
-          <div className="solution-header">
-            <h3>Solution</h3>
-            <button onClick={() => setIsOverlayVisible(false)}>×</button>
-          </div>
-          <div className="solution-content">
-            <pre className="code-block">{solution?.code}</pre>
-            <div className="thoughts">
-              <h4>Thoughts</h4>
-              <p>{solution?.thoughts}</p>
-            </div>
-            <div className="complexity">
-              <h4>Complexity Analysis</h4>
-              <p>Time Complexity: {solution?.time_complexity}</p>
-              <p>Space Complexity: {solution?.space_complexity}</p>
-            </div>
-          </div>
+      {error && (
+        <div className="error-message">
+          {error}
+          <button onClick={() => setError(null)}>×</button>
         </div>
       )}
+
+      <div className="solution-overlay">
+        <div className="solution-header">
+          <h3>Solution</h3>
+        </div>
+
+        {isLoading ? (
+          <div className="loading">
+            <div className="spinner"></div>
+            <p>Generating solution...</p>
+          </div>
+        ) : (
+          <div className="solution-content">
+            {solution ? (
+              <>
+                <div className="thoughts">
+                  <h4>My Thoughts</h4>
+                  <p>{solution.thoughts}</p>
+                </div>
+
+                <div className="code">
+                  <h4>Code Solution</h4>
+                  <pre className="code-block">{solution.code}</pre>
+                </div>
+
+                <div className="complexity">
+                  <h4>Complexity Analysis</h4>
+                  <p>Time Complexity: {solution.time_complexity}</p>
+                  <p>Space Complexity: {solution.space_complexity}</p>
+                </div>
+              </>
+            ) : (
+              <p className="no-solution">
+                Press Ctrl+Alt+P to capture a screenshot, then Ctrl+Alt+Enter to
+                generate a solution.
+                <br />
+                <br />
+                Press Ctrl+Alt+R to reset the solution.
+                <br />
+                <br />
+                Press Ctrl+Alt+V to toggle the hide/show the window.
+                <br />
+                <br />
+                Press Ctrl+Alt+Left/Right/Up/Down to move the window around.
+              </p>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

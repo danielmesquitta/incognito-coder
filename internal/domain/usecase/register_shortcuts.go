@@ -14,6 +14,7 @@ func NewRegisterShortcuts() *RegisterShortcuts {
 }
 
 func (r *RegisterShortcuts) Execute(ctx context.Context) {
+	// Screenshot: Ctrl+Alt+P
 	hook.Register(
 		hook.KeyDown,
 		[]string{"p", "ctrl", "alt"},
@@ -22,6 +23,7 @@ func (r *RegisterShortcuts) Execute(ctx context.Context) {
 		},
 	)
 
+	// Generate solution: Ctrl+Alt+Enter
 	hook.Register(
 		hook.KeyDown,
 		[]string{"enter", "ctrl", "alt"},
@@ -30,11 +32,54 @@ func (r *RegisterShortcuts) Execute(ctx context.Context) {
 		},
 	)
 
+	// Reset: Ctrl+Alt+R
 	hook.Register(
 		hook.KeyDown,
 		[]string{"r", "ctrl", "alt"},
 		func(e hook.Event) {
 			runtime.EventsEmit(ctx, "global-shortcut", "reset")
+		},
+	)
+
+	// Toggle visibility: Ctrl+Alt+V
+	hook.Register(
+		hook.KeyDown,
+		[]string{"v", "ctrl", "alt"},
+		func(e hook.Event) {
+			runtime.EventsEmit(ctx, "global-shortcut", "toggle-visibility")
+		},
+	)
+
+	// Window movement: Ctrl+Alt+Arrow keys
+	hook.Register(
+		hook.KeyDown,
+		[]string{"left", "ctrl", "alt"},
+		func(e hook.Event) {
+			runtime.EventsEmit(ctx, "global-shortcut", "move-left")
+		},
+	)
+
+	hook.Register(
+		hook.KeyDown,
+		[]string{"right", "ctrl", "alt"},
+		func(e hook.Event) {
+			runtime.EventsEmit(ctx, "global-shortcut", "move-right")
+		},
+	)
+
+	hook.Register(
+		hook.KeyDown,
+		[]string{"up", "ctrl", "alt"},
+		func(e hook.Event) {
+			runtime.EventsEmit(ctx, "global-shortcut", "move-up")
+		},
+	)
+
+	hook.Register(
+		hook.KeyDown,
+		[]string{"down", "ctrl", "alt"},
+		func(e hook.Event) {
+			runtime.EventsEmit(ctx, "global-shortcut", "move-down")
 		},
 	)
 

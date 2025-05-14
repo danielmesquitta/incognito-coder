@@ -30,13 +30,27 @@ func main() {
 		},
 		AlwaysOnTop: true,
 		Windows: &windows.Options{
-			WindowIsTranslucent: true,
+			WebviewIsTransparent: true,
+			WindowIsTranslucent:  true,
+			BackdropType:         windows.Acrylic,
+			DisableWindowIcon:    true,
 		},
 		Linux: &linux.Options{
 			WindowIsTranslucent: true,
+			WebviewGpuPolicy:    linux.WebviewGpuPolicyAlways,
 		},
 		Mac: &mac.Options{
-			WindowIsTranslucent: true,
+			WebviewIsTransparent: true,
+			WindowIsTranslucent:  true,
+			TitleBar: &mac.TitleBar{
+				TitlebarAppearsTransparent: true,
+				HideTitle:                  true,
+				FullSizeContent:            true,
+			},
+			About: &mac.AboutInfo{
+				Title:   "Incognito Coder",
+				Message: "A coding interview assistant",
+			},
 		},
 	})
 
