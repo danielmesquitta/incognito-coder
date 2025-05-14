@@ -1,14 +1,18 @@
-import { useEffect, useState } from 'react'
-import { CaptureScreenshot, GenerateSolution, Reset, SetLanguage } from '../wailsjs/go/app/App'
-import { EventsOn } from '../wailsjs/runtime'
-import './App.css'
+import { useEffect, useState } from "react";
+import {
+  CaptureScreenshot,
+  GenerateSolution,
+  Reset,
+  SetLanguage,
+} from "../wailsjs/go/app/App";
+import { entity } from "../wailsjs/go/models";
+import { EventsOn } from "../wailsjs/runtime/runtime";
+import "./App.css";
 
 function App() {
-  const [solution, setSolution] = useState('')
-  const [language, setLanguage] = useState('golang')
-  const [isOverlayVisible, setIsOverlayVisible] = useState(false)
-  const [thoughts, setThoughts] = useState('')
-  const [complexity, setComplexity] = useState({ time: '', space: '' })
+  const [solution, setSolution] = useState<entity.Solution | null>(null);
+  const [language, setLanguage] = useState("golang");
+  const [isOverlayVisible, setIsOverlayVisible] = useState(false);
 
   useEffect(() => {
     // Listen for global keyboard shortcuts
@@ -16,51 +20,49 @@ function App() {
       switch (shortcut) {
         case "screenshot":
           try {
-            await CaptureScreenshot()
+            await CaptureScreenshot();
           } catch (error) {
-            console.error('Failed to capture screenshot:', error)
+            console.error("Failed to capture screenshot:", error);
           }
           break;
-        
+
         case "generate":
           try {
-            const result = await GenerateSolution()
-            setSolution(result)
-            setIsOverlayVisible(true)
+            const result = await GenerateSolution();
+            setSolution(result);
+            setIsOverlayVisible(true);
           } catch (error) {
-            console.error('Failed to generate solution:', error)
+            console.error("Failed to generate solution:", error);
           }
           break;
-        
+
         case "reset":
           try {
-            await Reset()
-            setSolution('')
-            setThoughts('')
-            setComplexity({ time: '', space: '' })
-            setIsOverlayVisible(false)
+            await Reset();
+            setSolution(null);
+            setIsOverlayVisible(false);
           } catch (error) {
-            console.error('Failed to reset:', error)
+            console.error("Failed to reset:", error);
           }
           break;
       }
-    })
+    });
 
     return () => {
-      unsubscribe()
-    }
-  }, [])
+      unsubscribe();
+    };
+  }, []);
 
-  const handleLanguageChange = async (newLang) => {
-    setLanguage(newLang)
-    await SetLanguage(newLang)
+  async function handleLanguageChange(newLang: string) {
+    setLanguage(newLang);
+    await SetLanguage(newLang);
   }
 
   return (
     <div className="app">
       <div className="controls">
-        <select 
-          value={language} 
+        <select
+          value={language}
           onChange={(e) => handleLanguageChange(e.target.value)}
           className="language-select"
         >
@@ -78,21 +80,21 @@ function App() {
             <button onClick={() => setIsOverlayVisible(false)}>×</button>
           </div>
           <div className="solution-content">
-            <pre className="code-block">{solution}</pre>
+            <pre className="code-block">{solution?.code}</pre>
             <div className="thoughts">
               <h4>Thoughts</h4>
-              <p>{thoughts}</p>
+              <p>{solution?.thoughts}</p>
             </div>
             <div className="complexity">
               <h4>Complexity Analysis</h4>
-              <p>Time Complexity: {complexity.time}</p>
-              <p>Space Complexity: {complexity.space}</p>
+              <p>Time Complexity: {solution?.time_complexity}</p>
+              <p>Space Complexity: {solution?.space_complexity}</p>
             </div>
           </div>
         </div>
       )}
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

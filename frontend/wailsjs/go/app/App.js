@@ -10,6 +10,10 @@ export function GenerateSolution() {
   return window['go']['app']['App']['GenerateSolution']();
 }
 
+export function RegisterShortcuts() {
+  return window['go']['app']['App']['RegisterShortcuts']();
+}
+
 export function Reset() {
   return window['go']['app']['App']['Reset']();
 }
