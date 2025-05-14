@@ -1,16 +1,24 @@
-package app
+package usecase
 
 import (
+	"context"
+
 	hook "github.com/robotn/gohook"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
-func (a *App) registerKeyShortcuts() {
+type RegisterShortcuts struct{}
+
+func NewRegisterShortcuts() *RegisterShortcuts {
+	return &RegisterShortcuts{}
+}
+
+func (r *RegisterShortcuts) Execute(ctx context.Context) {
 	hook.Register(
 		hook.KeyDown,
 		[]string{"p", "ctrl", "alt"},
 		func(e hook.Event) {
-			runtime.EventsEmit(a.ctx, "global-shortcut", "screenshot")
+			runtime.EventsEmit(ctx, "global-shortcut", "screenshot")
 		},
 	)
 
@@ -18,7 +26,7 @@ func (a *App) registerKeyShortcuts() {
 		hook.KeyDown,
 		[]string{"enter", "ctrl", "alt"},
 		func(e hook.Event) {
-			runtime.EventsEmit(a.ctx, "global-shortcut", "generate")
+			runtime.EventsEmit(ctx, "global-shortcut", "generate")
 		},
 	)
 
@@ -26,7 +34,7 @@ func (a *App) registerKeyShortcuts() {
 		hook.KeyDown,
 		[]string{"r", "ctrl", "alt"},
 		func(e hook.Event) {
-			runtime.EventsEmit(a.ctx, "global-shortcut", "reset")
+			runtime.EventsEmit(ctx, "global-shortcut", "reset")
 		},
 	)
 

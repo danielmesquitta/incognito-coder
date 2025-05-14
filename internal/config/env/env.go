@@ -28,6 +28,7 @@ type Env struct {
 
 	Environment  Environment `mapstructure:"ENVIRONMENT"    validate:"required,oneof=development production staging test"`
 	OpenAIAPIKey string      `mapstructure:"OPENAI_API_KEY" validate:"required"`
+	TmpDir       string      `mapstructure:"TMP_DIR"        validate:"required"`
 }
 
 func NewEnv(v *validator.Validator) *Env {
