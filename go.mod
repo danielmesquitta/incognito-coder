@@ -1,8 +1,6 @@
 module github.com/danielmesquitta/incognito-coder
 
-go 1.23.0
-
-toolchain go1.24.1
+go 1.24.1
 
 require (
 	github.com/go-playground/locales v0.14.1
